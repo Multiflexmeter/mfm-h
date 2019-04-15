@@ -1,8 +1,4 @@
 #include <Arduino.h>
-#include <lmic.h>
-#include <hal/hal.h>
-#include <SPI.h>
-
 #include <MFMLora.h>
 
 // ======= JOBS ======
@@ -47,82 +43,7 @@ void sendFunc(osjob_t *j)
     Serial.println("Packet queued");
   }
 }
-// This is the event listeners, When the LoRa module (RFM95) is done sending
-// it will notify this function by: EV_TXCOMPLETE
-// That's when we schedule another sendJob (sendFunc)
-void onEvent(ev_t ev)
-{
-  Serial.print(os_getTime());
-  Serial.print(": ");
-  switch (ev)
-  {
-  case EV_SCAN_TIMEOUT:
-    Serial.println(F("EV_SCAN_TIMEOUT"));
-    break;
-  case EV_BEACON_FOUND:
-    Serial.println(F("EV_BEACON_FOUND"));
-    break;
-  case EV_BEACON_MISSED:
-    Serial.println(F("EV_BEACON_MISSED"));
-    break;
-  case EV_BEACON_TRACKED:
-    Serial.println(F("EV_BEACON_TRACKED"));
-    break;
-  case EV_JOINING:
-    Serial.println(F("EV_JOINING"));
-    break;
-  case EV_JOINED:
-    Serial.println(F("EV_JOINED"));
-    // Schedule sendjob
-    os_setTimedCallback(&sendJob, os_getTime() + sec2osticks(1), sendFunc);
-    // Disable link check validation (automatically enabled
-    // during join, but not supported by TTN at this time).
-    LMIC_setLinkCheckMode(0);
-    break;
-  case EV_RFU1:
-    Serial.println(F("EV_RFU1"));
-    break;
-  case EV_JOIN_FAILED:
-    Serial.println(F("EV_JOIN_FAILED"));
-    break;
-  case EV_REJOIN_FAILED:
-    Serial.println(F("EV_REJOIN_FAILED"));
-    break;
-    break;
-  case EV_TXCOMPLETE:
-    Serial.println(F("EV_TXCOMPLETE (includes waiting for RX windows)"));
-    if (LMIC.txrxFlags & TXRX_ACK)
-      Serial.println(F("Received ack"));
-    if (LMIC.dataLen)
-    {
-      Serial.println(F("Received "));
-      Serial.println(LMIC.dataLen);
-      Serial.println(F(" bytes of payload"));
-    }
-    // Schedule next transmission
-    os_setTimedCallback(&sendJob, os_getTime() + sec2osticks(SEND_INTERVAL_SECONDS), sendFunc);
-    break;
-  case EV_LOST_TSYNC:
-    Serial.println(F("EV_LOST_TSYNC"));
-    break;
-  case EV_RESET:
-    Serial.println(F("EV_RESET"));
-    break;
-  case EV_RXCOMPLETE:
-    // data received in ping slot
-    Serial.println(F("EV_RXCOMPLETE"));
-    break;
-  case EV_LINK_DEAD:
-    Serial.println(F("EV_LINK_DEAD"));
-    break;
-  case EV_LINK_ALIVE:
-    Serial.println(F("EV_LINK_ALIVE"));
-    break;
-  default:
-    Serial.println(F("Unknown event"));
-    break;
-  }
-}
+
 void setup()
 {
   Serial.begin(9600);
