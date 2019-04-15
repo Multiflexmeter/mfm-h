@@ -17,7 +17,10 @@ public:
   static void loop();
 
 private:
+  static void sendData(osjob_t *);
+  
   static osjob_t doMeasurementsJob;
+  static osjob_t sendDataJob;
 };
 
 #endif

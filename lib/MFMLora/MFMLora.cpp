@@ -4,6 +4,7 @@
   Define MFMLora jobs
 */
 osjob_t MFMLora::doMeasurementsJob;
+osjob_t MFMLora::sendDataJob;
 
 /**
  * Setup the LoRaWAN framework and join the network
@@ -38,6 +39,7 @@ void MFMLora::onEvent(ev_t ev)
     Serial.println(F("JOINED"));
     // Trigger measurements and sending
     os_setCallback(&MFMLora::doMeasurementsJob, doMeasurements);
+    os_setCallback(&MFMLora::sendDataJob, sendData);
     break;
 
   case EV_TXCOMPLETE:
@@ -58,6 +60,11 @@ void MFMLora::onEvent(ev_t ev)
 void MFMLora::loop()
 {
   os_runloop_once();
+}
+
+void MFMLora::sendData(osjob_t* j)
+{
+  Serial.println(F("Sending..."));
 }
 
 /*
