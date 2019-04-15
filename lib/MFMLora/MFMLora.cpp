@@ -2,23 +2,30 @@
 
 void MFMLora::setup(void)
 {
-
+  os_init();
+  LMIC_reset();
+#ifndef _EXTERNAL_CLOCK
+  LMIC_setClockError(MAX_CLOCK_ERROR * 2 / 100);
+#endif
+  LMIC.dn2Dr = DR_SF9;
+  LMIC_setDrTxpow(DR_SF7, 14);
+  LMIC_startJoining();
 }
 
 void MFMLora::onEvent(ev_t ev)
 {
   switch (ev)
   {
-    case EV_JOINED:
-      Serial.println(F("JOINED"));
-      break;
+  case EV_JOINED:
+    Serial.println(F("JOINED"));
+    break;
 
-    case EV_TXCOMPLETE:
-      Serial.println(F("TX_COMPLETE"));
-      break;
+  case EV_TXCOMPLETE:
+    Serial.println(F("TX_COMPLETE"));
+    break;
 
-    default:
-      break;
+  default:
+    break;
   }
 }
 

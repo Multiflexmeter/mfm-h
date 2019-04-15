@@ -11,4 +11,7 @@
 #define _PIN_DIO_1 7
 #define _PIN_DIO_2 6
 
+// Uncomment if an external clock is used
+// #define _EXTERNAL_CLOCK
+
 #endif

@@ -47,19 +47,7 @@ void sendFunc(osjob_t *j)
 void setup()
 {
   Serial.begin(9600);
-  // Enable the timing 'framework'
-  os_init();
-  // Reset the LMIC struct state
-  // (pending messages, the frame, settings etc.)
-  LMIC_reset();
-  LMIC_setClockError(MAX_CLOCK_ERROR * 2 / 100);
-  // Disable link check validation
-  //LMIC_setLinkCheckMode(0);
-  // Spread factor for the receive window
-  LMIC.dn2Dr = DR_SF9;
-  // Set our datarate and transmit power
-  LMIC_setDrTxpow(DR_SF7, 14);
-  LMIC_startJoining();
+  MFMLora::setup();
 }
 void loop()
 {
