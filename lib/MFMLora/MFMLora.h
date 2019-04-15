@@ -6,6 +6,8 @@
 #include <hal/hal.h>
 #include "MFMLoraConfig.h"
 
+extern void doMeasurements(osjob_t *);
+
 // Define MFMLora class
 class MFMLora
 {
@@ -15,6 +17,7 @@ public:
   static void loop();
 
 private:
+  static osjob_t doMeasurementsJob;
 };
 
 #endif
