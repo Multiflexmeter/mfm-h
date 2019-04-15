@@ -10,6 +10,10 @@
 #define _PIN_DIO_1 7
 #define _PIN_DIO_2 6
 
+// Define sleep length (subsequently send interval)
+// Divide your wanted time by 8 and round it!
+#define _SLEEP_ITERATIONS 2
+
 // Uncomment if an external clock is used
 // #define _EXTERNAL_CLOCK
 

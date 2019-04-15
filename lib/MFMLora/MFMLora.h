@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <lmic.h>
 #include <hal/hal.h>
+#include <LowPower.h>
 #include "MFMLoraConfig.h"
 
 extern void doMeasurements(osjob_t *);
@@ -20,9 +21,13 @@ public:
 
 private:
   static void sendData(osjob_t *);
+  static void sleep(osjob_t *);
 
   static osjob_t doMeasurementsJob;
   static osjob_t sendDataJob;
+  static osjob_t sleepJob;
+
+  const static u16 PROGMEM sleepIterations;
 };
 
 #endif

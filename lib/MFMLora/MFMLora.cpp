@@ -5,12 +5,14 @@
 */
 osjob_t MFMLora::doMeasurementsJob;
 osjob_t MFMLora::sendDataJob;
+osjob_t MFMLora::sleepJob;
 
 /*
   Define MFMLora properties
 */
 u1_t MFMLora::txData[MAX_LEN_PAYLOAD];
 u1_t MFMLora::txDataLen;
+const u16 PROGMEM MFMLora::sleepIterations = _SLEEP_ITERATIONS;
 
 /**
  * Setup the LoRaWAN framework and join the network
@@ -50,6 +52,10 @@ void MFMLora::onEvent(ev_t ev)
 
   case EV_TXCOMPLETE:
     Serial.println(F("TX_COMPLETE"));
+    // Trigger sleep
+    os_setCallback(&MFMLora::sleepJob, MFMLora::sleep);
+    os_setTimedCallback(&MFMLora::doMeasurementsJob, sec2osticks(MFMLora::sleepIterations * 8), doMeasurements);
+    os_setTimedCallback(&MFMLora::sendDataJob, sec2osticks(MFMLora::sleepIterations * 8) + 1, sendData);
     break;
 
   default:
@@ -78,6 +84,17 @@ void MFMLora::sendData(osjob_t *j)
 {
   // Send tx data
   LMIC_setTxData2(1, MFMLora::txData, MFMLora::txDataLen, 0);
+}
+
+void MFMLora::sleep(osjob_t *j)
+{
+  Serial.flush();
+  noInterrupts();
+  for(u16 i = 0; i < MFMLora::sleepIterations; i++)
+  {
+    LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+  }
+  interrupts();
 }
 
 /*
