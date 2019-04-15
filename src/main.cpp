@@ -39,6 +39,8 @@ void powerDown(osjob_t *j)
 void setup()
 {
   Serial.begin(9600);
+
+  // Fire as last
   MFMLora::setup();
 }
 
