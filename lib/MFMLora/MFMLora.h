@@ -15,10 +15,12 @@ public:
   static void setup(void);
   static void onEvent(ev_t);
   static void loop();
+  static u1_t txData[MAX_LEN_PAYLOAD];
+  static u1_t txDataLen;
 
 private:
   static void sendData(osjob_t *);
-  
+
   static osjob_t doMeasurementsJob;
   static osjob_t sendDataJob;
 };

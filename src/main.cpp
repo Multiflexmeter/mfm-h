@@ -11,8 +11,8 @@ void doMeasurements(osjob_t* j)
   int arbitraryValue = 64;
   
   // Temporary data preparation
-  memcpy(LMIC.pendTxData, (void *)arbitraryValue, 1);
-  LMIC.pendTxLen = 1;
+  memcpy(MFMLora::txData, (void *)arbitraryValue, sizeof(arbitraryValue));
+  MFMLora::txDataLen = sizeof(arbitraryValue);
 }
 
 /**

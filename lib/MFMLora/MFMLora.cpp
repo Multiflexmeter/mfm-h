@@ -6,6 +6,12 @@
 osjob_t MFMLora::doMeasurementsJob;
 osjob_t MFMLora::sendDataJob;
 
+/*
+  Define MFMLora properties
+*/
+u1_t MFMLora::txData[MAX_LEN_PAYLOAD];
+u1_t MFMLora::txDataLen;
+
 /**
  * Setup the LoRaWAN framework and join the network
  * with OTAA joining
@@ -62,9 +68,10 @@ void MFMLora::loop()
   os_runloop_once();
 }
 
-void MFMLora::sendData(osjob_t* j)
+void MFMLora::sendData(osjob_t *j)
 {
-  Serial.println(F("Sending..."));
+  // Send tx data
+  LMIC_setTxData2(1, MFMLora::txData, MFMLora::txDataLen, 0);
 }
 
 /*
