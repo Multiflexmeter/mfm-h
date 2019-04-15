@@ -68,6 +68,12 @@ void MFMLora::loop()
   os_runloop_once();
 }
 
+/**
+ * Sends MFMLora::txData to uplink
+ * 
+ * Fired after measurements have been copied to
+ * txData by doMeasurements.
+ */
 void MFMLora::sendData(osjob_t *j)
 {
   // Send tx data
