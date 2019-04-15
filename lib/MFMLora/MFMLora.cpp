@@ -36,12 +36,12 @@ void MFMLora::onEvent(ev_t ev)
   {
   case EV_JOINED:
     Serial.println(F("JOINED"));
+    // Trigger measurements and sending
+    os_setCallback(&MFMLora::doMeasurementsJob, doMeasurements);
     break;
 
   case EV_TXCOMPLETE:
     Serial.println(F("TX_COMPLETE"));
-    // Trigger measurements and sending
-    os_setCallback(&MFMLora::doMeasurementsJob, doMeasurements);
     break;
 
   default:
