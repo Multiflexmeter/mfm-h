@@ -16,6 +16,24 @@ void doMeasurements(osjob_t* j)
 }
 
 /**
+ * Fired before sleeping.
+ * 
+ * You should powerdown instruments here.
+ */
+void powerDown(osjob_t *j)
+{
+}
+
+/**
+ * Fired before doing measurements.
+ * 
+ * You should activate/reset/prepare your instruments here.
+ */
+void powerUp(osjob_t *j)
+{
+}
+
+/**
  * Fired after ATMega reset
  */
 void setup()

@@ -6,6 +6,8 @@
 osjob_t MFMLora::doMeasurementsJob;
 osjob_t MFMLora::sendDataJob;
 osjob_t MFMLora::sleepJob;
+osjob_t MFMLora::powerDownJob;
+osjob_t MFMLora::powerUpJob;
 
 /*
   Define MFMLora properties
@@ -45,17 +47,14 @@ void MFMLora::onEvent(ev_t ev)
   {
   case EV_JOINED:
     Serial.println(F("JOINED"));
-    // Trigger measurements and sending
-    os_setCallback(&MFMLora::doMeasurementsJob, doMeasurements);
-    os_setCallback(&MFMLora::sendDataJob, sendData);
+    // Schedule cycle without sleeping
+    MFMLora::scheduleCycle(false);
     break;
 
   case EV_TXCOMPLETE:
     Serial.println(F("TX_COMPLETE"));
-    // Trigger sleep
-    os_setCallback(&MFMLora::sleepJob, MFMLora::sleep);
-    os_setTimedCallback(&MFMLora::doMeasurementsJob, sec2osticks(MFMLora::sleepIterations * 8), doMeasurements);
-    os_setTimedCallback(&MFMLora::sendDataJob, sec2osticks(MFMLora::sleepIterations * 8) + 1, sendData);
+    // Schedule cycle
+    MFMLora::scheduleCycle(true);
     break;
 
   default:
@@ -75,6 +74,27 @@ void MFMLora::loop()
 }
 
 /**
+ * Schedules a cycle optionally with sleeping.
+ */
+void MFMLora::scheduleCycle(bool sleep)
+{
+  if (sleep) {
+    // Scheduled asap
+    os_setCallback(&MFMLora::powerDownJob, powerDown);
+    os_setCallback(&MFMLora::sleepJob, MFMLora::sleep);
+    // Scheduled after wakeup
+    os_setTimedCallback(&MFMLora::powerUpJob, os_getTime() + sec2osticks(MFMLora::sleepIterations * 8), powerUp);
+    os_setTimedCallback(&MFMLora::doMeasurementsJob, os_getTime() + sec2osticks(MFMLora::sleepIterations * 8), doMeasurements);
+    os_setTimedCallback(&MFMLora::sendDataJob, os_getTime() + sec2osticks(MFMLora::sleepIterations * 8), sendData);
+  } else {
+    // Scheduled asap
+    os_setCallback(&MFMLora::powerUpJob, powerUp);
+    os_setCallback(&MFMLora::doMeasurementsJob, doMeasurements);
+    os_setCallback(&MFMLora::sendDataJob, sendData);
+  }
+}
+
+/**
  * Sends MFMLora::txData to uplink
  * 
  * Fired after measurements have been copied to
@@ -90,7 +110,7 @@ void MFMLora::sleep(osjob_t *j)
 {
   Serial.flush();
   noInterrupts();
-  for(u16 i = 0; i < MFMLora::sleepIterations; i++)
+  for (u16 i = 0; i < MFMLora::sleepIterations; i++)
   {
     LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
   }
