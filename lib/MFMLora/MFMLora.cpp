@@ -78,7 +78,8 @@ void MFMLora::loop()
  */
 void MFMLora::scheduleCycle(bool sleep)
 {
-  if (sleep) {
+  if (sleep)
+  {
     // Scheduled asap
     os_setCallback(&MFMLora::powerDownJob, powerDown);
     os_setCallback(&MFMLora::sleepJob, MFMLora::sleep);
@@ -86,7 +87,9 @@ void MFMLora::scheduleCycle(bool sleep)
     os_setTimedCallback(&MFMLora::powerUpJob, os_getTime() + sec2osticks(MFMLora::sleepIterations * 8), powerUp);
     os_setTimedCallback(&MFMLora::doMeasurementsJob, os_getTime() + sec2osticks(MFMLora::sleepIterations * 8), doMeasurements);
     os_setTimedCallback(&MFMLora::sendDataJob, os_getTime() + sec2osticks(MFMLora::sleepIterations * 8), sendData);
-  } else {
+  }
+  else
+  {
     // Scheduled asap
     os_setCallback(&MFMLora::powerUpJob, powerUp);
     os_setCallback(&MFMLora::doMeasurementsJob, doMeasurements);
