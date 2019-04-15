@@ -31,12 +31,18 @@ void sendFunc(osjob_t *j)
   }
 }
 
+/**
+ * Fired after ATMega reset
+ */
 void setup()
 {
   Serial.begin(9600);
   MFMLora::setup();
 }
 
+/**
+ * Fired every cycle
+ */
 void loop()
 {
   MFMLora::loop();

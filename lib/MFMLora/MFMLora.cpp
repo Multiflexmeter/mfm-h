@@ -1,17 +1,30 @@
 #include "MFMLora.h"
 
+/**
+ * Setup the LoRaWAN framework and join the network
+ * with OTAA joining
+ */
 void MFMLora::setup(void)
 {
   os_init();
   LMIC_reset();
+  // If there is no external clock, set a 2% clock_error
+  // this relaxes the RX window timing.
 #ifndef _EXTERNAL_CLOCK
   LMIC_setClockError(MAX_CLOCK_ERROR * 2 / 100);
 #endif
+  // RX Window at SF 9
   LMIC.dn2Dr = DR_SF9;
+  // Start transmitting at SF 7
   LMIC_setDrTxpow(DR_SF7, 14);
   LMIC_startJoining();
 }
 
+/**
+ * Fires when an LoRaWAN Event occurs.
+ * 
+ * Delegated from LMIC its `onEvent`.
+ */
 void MFMLora::onEvent(ev_t ev)
 {
   switch (ev)
@@ -29,13 +42,19 @@ void MFMLora::onEvent(ev_t ev)
   }
 }
 
+/**
+ * Loops the LoRaWAN timing system.
+ * 
+ * WARNING: You should never use the loop
+ * for anything else then this!
+ */
 void MFMLora::loop()
 {
   os_runloop_once();
 }
 
 /*
-  Define LMIC Required delegates
+  Delegation from config files to LMIC its framework
 */
 
 // Pin mapping
@@ -59,7 +78,7 @@ void os_getArtEui(u1_t *buf) { memcpy_P(buf, APPEUI, 8); }
 void os_getDevEui(u1_t *buf) { memcpy_P(buf, DEVEUI, 8); }
 void os_getDevKey(u1_t *buf) { memcpy_P(buf, APPKEY, 16); }
 
-// delegate the onEvent to the class
+// delegate the LMIC its `onEvent` to the MFMLora class
 void onEvent(ev_t ev)
 {
   MFMLora::onEvent(ev);
