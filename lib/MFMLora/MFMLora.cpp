@@ -29,6 +29,11 @@ void MFMLora::onEvent(ev_t ev)
   }
 }
 
+void MFMLora::loop()
+{
+  os_runloop_once();
+}
+
 /*
   Define LMIC Required delegates
 */

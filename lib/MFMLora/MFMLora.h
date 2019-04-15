@@ -12,6 +12,7 @@ class MFMLora
 public:
   static void setup(void);
   static void onEvent(ev_t);
+  static void loop();
 
 private:
 };
