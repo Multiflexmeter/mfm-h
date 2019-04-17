@@ -1,4 +1,4 @@
-# Setting up development environment
+# Setting up the development environment
 
 These instructions will get you a full development environment running. At the end of this guide you will be able to edit and build the source-code.
 
