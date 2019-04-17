@@ -1,43 +1,92 @@
-# Multiflexmeter-H Sketch V3.3.0
+# Multiflexmeter-H Sketch
 
 This project contains the source code for the latest Multiflexmeter.
 
+## Introduction
+
+The word *Multiflexmeter* is a Portmanteau of *Multifunctional, Flexible, Meter*.
+
+- **Multi;** Capable of measuring different properties
+- **Flex;** Modifiable to your needs
+- **Meter;** *Dutch noun*: Measuring Device
+
+The Multiflexmeter is a fully Open-Source project. Each necesarry component to build your own is available online.
+
+- [The Github organisation](https://github.com/Multiflexmeter)
+- [The wiki](https://wiki.multiflexmeter.net)
+- [The website](https://multiflexmeter.nl)
+
+The Multiflexmeter is developed with an AtMega328p. This is the same chip used on an Arduino Uno. This is too keep the entry level low for new developers.
+
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+These instructions will get you a full development environment up and running.
 
 ### Prerequisites
 
-The project is developed using the PlatformIO (PIO) environment. It is highly recommended to develop in VSCode, which has great PIO intergration.
+This project is developed using the [PlatformIO (PIO)](https://docs.platformio.org/en/latest/ide.html#) software. We highly recommend using it with [Visual Studio Code](https://code.visualstudio.com/).
 
- * [Visual Studio Code](https://code.visualstudio.com/)
+**Software**
 
-Install PIO through the VSCode extensions, or follow a guide at the [PlatformIO Website](https://docs.platformio.org/en/latest/ide.html#).
+- [Visual Studio Code](https://code.visualstudio.com/)
+  - *Tip: Use `` CTRL+` `` for a command shell.*
+- [PlatformIO (PIO)](https://docs.platformio.org/en/latest/ide.html#)
+
+**Hardware**
+
+- A MFM-H V3 Board
+- FTDI Programmer
+- SPI Programmer
+
+**Other**
+
+- Nearby LoRaWAN gateway
+- [LoRaWAN OTAA Device keys](https://www.thethingsnetwork.org/docs/devices/registration.html)
 
 
 ### Installing
 
+Installation is very straightforward.
+
 Clone this repository through git
 
 ```
-git clone git@github.com:Multiflexmeter/mfm-h.git
+$ git clone git@github.com:Multiflexmeter/mfm-h.git
 ```
 
-Install PIO Libraries
+Open Visual Studio Code on the project
 
 ```
-pio lib install
+$ cd mfm-h
+$ code .
 ```
 
-Either program using the PIO controls in VSCode, or through a shell
+If there are native tests available, you could execute them through  
+*A native test, tests code that is not dependant on a microchip or the Arduino library.*
 
 ```
-pio run -t program -e m328p8m
+$ pio test -e native 
 ```
 
-## Deployment
+## Programming the board
 
-Add additional notes about how to deploy this on a live system
+The PIO platform takes care of most business. The `platformio.ini` file defines the possible environments for programming and testing. The only available programming environment currently is called `328p8m`. 
+
+Connect the SPI Programmer to the board and run the program command with the 328p8m environment through PIO
+
+```
+$ pio run -t program -e 328p8m
+```
+
+### Monitoring the board (Serial communication)
+
+To establish serial communication you need to connect the TX and RX pins on the board to your computer. An easy way to accomplish this is using a FTDI programmer.
+
+Connect GND, TX and RX from the FTDI programmer to the board and plug the FTDI's USB in your computer. Run the following command to open a serial communication window.
+
+```
+$ pio device monitor
+```
 
 ## Versioning
 
