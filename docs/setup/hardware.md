@@ -36,7 +36,7 @@ pio device monitor
 If you are not receiving anything, try swapping the TX and RX pins. If you are still not receiving anything, read [the troubleshoot guide here](serial_monitor.md#Troubleshooting).
 
 
-## Next steps
+# Next steps
 
 - [Setting up the software](software.md)
 - [Connecting the serial monitor](serial_monitor.md)
