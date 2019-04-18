@@ -32,7 +32,7 @@ void MFMLora::setup(void)
   LMIC_reset();
   // If there is no external clock, set a 2% clock_error
   // this relaxes the RX window timing.
-#ifndef EXTERNAL_CLOCK
+#ifdef INTERNAL_CLOCK
   LMIC_setClockError(MAX_CLOCK_ERROR * 2 / 100);
 #endif
   // RX Window at SF 9

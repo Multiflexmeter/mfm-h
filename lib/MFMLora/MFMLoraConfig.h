@@ -23,6 +23,9 @@
 // Comment to disable printing the build date-time
 #define PRINT_BUILD_DATE_TIME
 
+// Comment if using external clock
+#define INTERNAL_CLOCK
+
 /*
   Below are the more advanced settings.
   Don't just change them without knowing what you are doing!
