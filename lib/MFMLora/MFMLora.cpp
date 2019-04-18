@@ -14,7 +14,7 @@ osjob_t MFMLora::powerUpJob;
 */
 u1_t MFMLora::txData[MAX_LEN_PAYLOAD];
 u1_t MFMLora::txDataLen;
-const u16 PROGMEM MFMLora::sleepIterations = _SLEEP_ITERATIONS;
+const u16 PROGMEM MFMLora::sleepIterations = SLEEP_ITERATIONS;
 
 /**
  * Setup the LoRaWAN framework and join the network
@@ -22,11 +22,12 @@ const u16 PROGMEM MFMLora::sleepIterations = _SLEEP_ITERATIONS;
  */
 void MFMLora::setup(void)
 {
+  Serial.println(F(BUILD_TIME));
   os_init();
   LMIC_reset();
   // If there is no external clock, set a 2% clock_error
   // this relaxes the RX window timing.
-#ifndef _EXTERNAL_CLOCK
+#ifndef EXTERNAL_CLOCK
   LMIC_setClockError(MAX_CLOCK_ERROR * 2 / 100);
 #endif
   // RX Window at SF 9
@@ -126,19 +127,19 @@ void MFMLora::sleep(osjob_t *j)
 
 // Pin mapping
 const lmic_pinmap lmic_pins = {
-    .nss = _PIN_NSS,
+    .nss = PIN_NSS,
     .rxtx = LMIC_UNUSED_PIN,
-    .rst = _PIN_RST,
+    .rst = PIN_RST,
     .dio = {
-        _PIN_DIO_0,
-        _PIN_DIO_1,
-        _PIN_DIO_2},
+        PIN_DIO_0,
+        PIN_DIO_1,
+        PIN_DIO_2},
 };
 
 // Store APPEUI DEVEUI and APPKEY in Flash ROM
-const u1_t PROGMEM APPEUI[8] = _APP_EUI;
-const u1_t PROGMEM DEVEUI[8] = _DEV_EUI;
-const u1_t PROGMEM APPKEY[16] = _APP_KEY;
+const u1_t PROGMEM APPEUI[8] = APP_EUI;
+const u1_t PROGMEM DEVEUI[8] = DEV_EUI;
+const u1_t PROGMEM APPKEY[16] = APP_KEY;
 
 // Provide getters for the LMIC Library
 void os_getArtEui(u1_t *buf) { memcpy_P(buf, APPEUI, 8); }
