@@ -49,6 +49,8 @@ void MFMLora::setup(void)
  */
 void MFMLora::onEvent(ev_t ev)
 {
+  Serial.print(F("Ev: "));
+  Serial.println(ev);
   switch (ev)
   {
   case EV_JOINED:
