@@ -22,7 +22,12 @@ const u16 PROGMEM MFMLora::sleepIterations = SLEEP_ITERATIONS;
  */
 void MFMLora::setup(void)
 {
-  Serial.println(F(BUILD_TIME));
+#ifdef PRINT_BUILD_DATE_TIME
+  Serial.print(F("Build at: "));
+  Serial.print(F(__DATE__));
+  Serial.print(" ");
+  Serial.println(F(__TIME__));
+#endif
   os_init();
   LMIC_reset();
   // If there is no external clock, set a 2% clock_error

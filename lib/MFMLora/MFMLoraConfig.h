@@ -20,6 +20,9 @@
 #define SLEEP_ITERATIONS 2
 #endif
 
+// Comment to disable printing the build date-time
+#define PRINT_BUILD_DATE_TIME
+
 /*
   Below are the more advanced settings.
   Don't just change them without knowing what you are doing!
@@ -43,14 +46,6 @@
 
 #ifndef PIN_DIO_2
 #define PIN_DIO_2 6
-#endif
-
-// Uncomment if using an external clock
-//#define EXTERNAL_CLOCK
-
-// Defined dynamically by PIO environment
-#ifndef BUILD_TIME
-#define BUILD_TIME "MISSING"
 #endif
 
 #endif
