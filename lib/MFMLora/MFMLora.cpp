@@ -39,6 +39,8 @@ void MFMLora::setup(void)
   LMIC.dn2Dr = DR_SF9;
   // Start transmitting at SF 7
   LMIC_setDrTxpow(DR_SF7, 14);
+  // Enable ADR
+  LMIC_setAdrMode(0);
   LMIC_startJoining();
 }
 
@@ -61,6 +63,8 @@ void MFMLora::onEvent(ev_t ev)
 
   case EV_TXCOMPLETE:
     Serial.println(F("TX_COMPLETE"));
+    // Enable linkchecking
+    LMIC_setLinkCheckMode(1);
     // Schedule cycle
     MFMLora::scheduleCycle(true);
     break;
