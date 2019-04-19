@@ -18,11 +18,13 @@ The Multiflexmeter is a fully Open-Source project. Each necesarry component to b
 
 The Multiflexmeter is developed with an AtMega328p. This is the same chip used on an Arduino Uno. This is too keep the entry level low for new developers.
 
-# Setup
+# Setup & Usage
 
-- [Development environment](docs/setup/development.md)
-- [Software](docs/setup/software.md)
-- [Hardware](docs/setup/hardware.md)
+- [Setup development environment](docs/setup/development.md)
+- [Setup software](docs/setup/software.md)
+- [Setup hardware](docs/setup/hardware.md)
+- [Programming/Uploading](docs/programming.md)
+- [Serial monitor](docs/serial_monitor.md)
 
 # Version control
 
