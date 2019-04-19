@@ -13,3 +13,21 @@ Before being able to program the chip, you will need a connection to the chip. T
 See the [hardware guide](setup/hardware.md) on how to connect a programmer to the SPI header.
 
 # Programming
+
+Programming through PlatformIO is very easy. The project contains an environment for ISP programming called "328p8m". This environment programs the AtMega328p at 8MHz.
+
+You can program the device through the GUI and CLI.
+
+## GUI
+
+In VSCode click on the PlatformIO icon (looks like an ant), then under "Project Tasks" select "env:328p8m" and click on "Program". A window should appear that logs the programming progress.
+
+## CLI
+
+Using a shell, change directory to the project folder and execute the following command:
+
+```
+pio run -t program -e 328p8m
+```
+
+The shell window should now output the programming progress.
