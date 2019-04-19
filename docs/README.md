@@ -32,6 +32,6 @@ The Multiflexmeter is developed with an AtMega328p. This is the same chip used o
 
 # Other
 
-For more information please see check the wiki.
+For more information please see the wiki.
 
 - [Multiflexmeter wiki](https://wiki.multiflexmeter.net/)
