@@ -31,4 +31,4 @@ The duration is defined as sleep iterations. One sleep iteration is 8 seconds. T
 
 # Next steps
 
-- [Programming the device](programming.md)
+- [Programming the device](../programming.md)
