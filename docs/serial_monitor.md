@@ -6,6 +6,8 @@ The serial monitor is a software developer its best friend. It can be used to pr
 
 Before one can use the serial monitor, there must be a UART conversion to your computer. We recommend using something like the FT232RL.
 
+See the [hardware setup guide](setup/hardware.md) on how to connect the FT232RL to the Multiflexmeter board.
+
 ## Usage
 
 The serial monitor can be opened in two ways, either through the GUI or the CLI.
