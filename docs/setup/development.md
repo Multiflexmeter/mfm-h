@@ -17,7 +17,7 @@ Now that all the tools are installed, let's get a copy of the project on your co
 Open a shell on Linux, or open Git Bash on Windows and enter the following command:
 
 ```
-git clone git@github.com:Multiflexmeter/mfm-h.git
+git clone https://github.com/Multiflexmeter/mfm-h.git
 ```
 
 This will clone (download) the project to your computer in a folder named "mfm-h".
