@@ -17,7 +17,7 @@
 
 // 1 Sleep iteration is 8 seconds.
 #ifndef SLEEP_ITERATIONS
-#define SLEEP_ITERATIONS 2
+#define SLEEP_ITERATIONS 112
 #endif
 
 // Comment to disable printing the build date-time
