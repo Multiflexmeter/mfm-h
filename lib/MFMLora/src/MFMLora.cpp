@@ -95,10 +95,11 @@ void MFMLora::scheduleCycle(bool sleep)
     // Scheduled asap
     os_setCallback(&MFMLora::powerDownJob, powerDown);
     os_setCallback(&MFMLora::sleepJob, MFMLora::sleep);
-    // Scheduled after wakeup
-    os_setTimedCallback(&MFMLora::powerUpJob, os_getTime() + sec2osticks(MFMLora::sleepIterations * 8), powerUp);
-    os_setTimedCallback(&MFMLora::doMeasurementsJob, os_getTime() + sec2osticks(MFMLora::sleepIterations * 8), doMeasurements);
-    os_setTimedCallback(&MFMLora::sendDataJob, os_getTime() + sec2osticks(MFMLora::sleepIterations * 8), sendData);
+    // Scheduled after wakeup (Cheesy, sleepjob takes long)
+    // FIX:
+    os_setCallback(&MFMLora::powerUpJob, powerUp);
+    os_setCallback(&MFMLora::doMeasurementsJob, doMeasurements);
+    os_setCallback(&MFMLora::sendDataJob, sendData);
   }
   else
   {
