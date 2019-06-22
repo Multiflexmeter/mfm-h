@@ -2,6 +2,7 @@
 #include <DallasTemperature.h>
 #include <SoftwareSerial.h>
 #include <MFMLora.h>
+#include <MedianFilter.h>
 
 /*
   Instrument configuration
@@ -66,6 +67,16 @@ float getTemperature(void)
   return sensors.getTempCByIndex(0);
 }
 
+unsigned short medianUS(unsigned short (*func)(), int count)
+{
+  MedianFilter median(count, 0);
+  for (int i = 0; i < count; i++)
+  {
+    median.in(func());
+  }
+  return (unsigned short)median.out();
+}
+
 /**
  * Fired when data is to be collected.
  * 
@@ -74,7 +85,9 @@ float getTemperature(void)
 void doMeasurements(osjob_t *j)
 {
   Packet packet{
-      getDistance(), getTemperature()};
+      medianUS(getDistance, 13),
+      getTemperature()
+      };
 
   // Temporary data preparation
   memcpy(MFMLora::txData, (void *)&packet, sizeof(packet));
