@@ -11,6 +11,7 @@
 #define JSNV2_TX 4
 #define JSNV2_RX 3
 #define ONEWIRE_PIN 5
+#define BUZZER_PIN 17
 // settings
 #define WARMUP_TIME_MS 200
 #define JSNV2_TIMEOUT_MS 100
@@ -105,10 +106,32 @@ void powerDown(osjob_t *j)
 }
 
 /**
+ * Reset beep
+ */
+void doBuzzerBeep(){
+  tone(BUZZER_PIN, 10000);
+  delay(180);
+  tone(BUZZER_PIN, 5000);
+  delay(180);
+  tone(BUZZER_PIN, 1000);
+  delay(180);
+  tone(BUZZER_PIN, 750);
+  delay(180);
+  tone(BUZZER_PIN, 500);
+  delay(180);
+  tone(BUZZER_PIN, 100);
+  delay(180);
+  
+  noTone(BUZZER_PIN);
+  digitalWrite (BUZZER_PIN, LOW);
+}
+
+/**
  * Fired after ATMega reset
  */
 void setup()
 {
+  doBuzzerBeep();
   Serial.begin(9600);
   // Set pinmode
   pinMode(RELAY_PIN, OUTPUT);
