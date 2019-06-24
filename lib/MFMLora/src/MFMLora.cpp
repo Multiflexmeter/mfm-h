@@ -28,6 +28,11 @@ void MFMLora::setup(void)
   Serial.print(" ");
   Serial.println(F(__TIME__));
 #endif
+
+  MFMLora::LMICSetup();
+}
+
+void MFMLora::LMICSetup() {
   os_init();
   LMIC_reset();
   // If there is no external clock, set a 2% clock_error

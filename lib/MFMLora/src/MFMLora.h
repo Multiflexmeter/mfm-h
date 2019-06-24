@@ -26,6 +26,7 @@ public:
 private:
   static void sendData(osjob_t *);
   static void sleep(osjob_t *);
+  static void LMICSetup();
 
   static osjob_t doMeasurementsJob;
   static osjob_t sendDataJob;
