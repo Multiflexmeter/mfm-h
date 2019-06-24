@@ -16,7 +16,7 @@
 #endif
 
 #ifndef MFMLORA_DEBUG
-#define MFMLORA_DEBUG 1
+#define MFMLORA_DEBUG 0
 #endif
 
 // 1 Sleep iteration is 8 seconds.
