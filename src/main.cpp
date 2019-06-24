@@ -67,12 +67,13 @@ float getTemperature(void)
   return sensors.getTempCByIndex(0);
 }
 
-unsigned short medianUS(unsigned short (*func)(), int count)
+unsigned short medianUS(unsigned short (*func)(), int count, int interval)
 {
   MedianFilter median(count, 0);
   for (int i = 0; i < count; i++)
   {
     median.in(func());
+    delay(interval);
   }
   return (unsigned short)median.out();
 }
@@ -85,7 +86,7 @@ unsigned short medianUS(unsigned short (*func)(), int count)
 void doMeasurements(osjob_t *j)
 {
   Packet packet{
-      medianUS(getDistance, 13),
+      medianUS(getDistance, 13, 10),
       getTemperature()
       };
 
