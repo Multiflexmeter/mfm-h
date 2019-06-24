@@ -2,6 +2,7 @@
 #define _MFMLORA_H_
 
 #include <Arduino.h>
+#include <avr/wdt.h>
 #include <EEPROM.h>
 #include <lmic.h>
 #include <hal/hal.h>

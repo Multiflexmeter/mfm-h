@@ -24,6 +24,10 @@ lmic_t EEMEM eeprom_lmic_state;
  */
 void MFMLora::setup(void)
 {
+  // Prevent watchdog reset loop
+  MCUSR = 0;
+  wdt_disable();
+
 #ifdef PRINT_BUILD_DATE_TIME
   Serial.print(F("Build at: "));
   Serial.print(F(__DATE__));
@@ -59,7 +63,7 @@ bool MFMLora::loadLMIC(void) {
   }
   // If there is a saved state initialize the system
 #if MFMLORA_DEBUG > 0
-  Serial.print(F("Recovering LMIC state"));
+  Serial.println(F("Recovering LMIC state"));
 #endif
   os_init();
   os_radio(RADIO_RST);
@@ -197,6 +201,9 @@ void MFMLora::sleep(osjob_t *j)
   {
     LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
   }
+
+  // Reset atmega after sleep
+  wdt_enable(WDTO_15MS);
 }
 
 /*
