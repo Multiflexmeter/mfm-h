@@ -83,7 +83,7 @@ unsigned short medianUS(unsigned short (*func)(), int count, int interval)
  * 
  * Collected data must be copied to `LMIC.frame`
  */
-void doMeasurements(osjob_t *j)
+void doMeasurements()
 {
   Packet packet{
       medianUS(getDistance, 13, 10),
@@ -100,7 +100,7 @@ void doMeasurements(osjob_t *j)
  * 
  * You should activate/reset/prepare your instruments here.
  */
-void powerUp(osjob_t *j)
+void powerUp()
 {
   digitalWrite(RELAY_PIN, HIGH);
   JSNV2.begin(9600);
@@ -113,7 +113,7 @@ void powerUp(osjob_t *j)
  * 
  * You should powerdown instruments here.
  */
-void powerDown(osjob_t *j)
+void powerDown()
 {
   JSNV2.end();
   digitalWrite(RELAY_PIN, LOW);

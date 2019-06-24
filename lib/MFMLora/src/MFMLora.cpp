@@ -33,7 +33,7 @@ void MFMLora::setup(void)
 
   // If an LMIC State exists
   if (MFMLora::loadLMIC()) {
-    MFMLora::scheduleCycle(false);
+    MFMLora::scheduleCycle();
   } else {
     MFMLora::setupLMIC();
   }
@@ -102,8 +102,6 @@ void MFMLora::setupLMIC(void) {
  */
 void MFMLora::onEvent(ev_t ev)
 {
-  MFMLora::saveLMIC();
-
   Serial.print(F("Ev: "));
   Serial.println(ev);
   switch (ev)
@@ -111,15 +109,14 @@ void MFMLora::onEvent(ev_t ev)
   case EV_JOINED:
     Serial.println(F("JOINED"));
     // Schedule cycle without sleeping
-    MFMLora::scheduleCycle(false);
+    MFMLora::scheduleCycle();
     break;
 
   case EV_TXCOMPLETE:
     Serial.println(F("TX_COMPLETE"));
-    // Enable linkchecking
-    LMIC_setLinkCheckMode(1);
-    // Schedule cycle
-    MFMLora::scheduleCycle(true);
+    // Power down
+    os_setCallback(&MFMLora::powerDownJob, MFMLora::powerDownWrapper);
+    os_setCallback(&MFMLora::sleepJob, MFMLora::sleep);
     break;
 
   default:
@@ -141,26 +138,36 @@ void MFMLora::loop()
 /**
  * Schedules a cycle optionally with sleeping.
  */
-void MFMLora::scheduleCycle(bool sleep)
+void MFMLora::scheduleCycle()
 {
-  if (sleep)
-  {
-    // Scheduled asap
-    os_setCallback(&MFMLora::powerDownJob, powerDown);
-    os_setCallback(&MFMLora::sleepJob, MFMLora::sleep);
-    // Scheduled after wakeup (Cheesy, sleepjob takes long)
-    // FIX:
-    os_setCallback(&MFMLora::powerUpJob, powerUp);
-    os_setCallback(&MFMLora::doMeasurementsJob, doMeasurements);
-    os_setCallback(&MFMLora::sendDataJob, sendData);
-  }
-  else
-  {
-    // Scheduled asap
-    os_setCallback(&MFMLora::powerUpJob, powerUp);
-    os_setCallback(&MFMLora::doMeasurementsJob, doMeasurements);
-    os_setCallback(&MFMLora::sendDataJob, sendData);
-  }
+  os_setCallback(&MFMLora::powerUpJob, MFMLora::powerUpWrapper);
+  os_setCallback(&MFMLora::doMeasurementsJob, MFMLora::doMeasurementsWrapper);
+  os_setCallback(&MFMLora::sendDataJob, MFMLora::sendData);
+}
+
+void MFMLora::powerUpWrapper(osjob_t *j) {
+#if MFMLORA_DEBUG > 0
+  Serial.println(F("Powering up"));
+#endif
+
+  powerUp();
+}
+
+void MFMLora::doMeasurementsWrapper(osjob_t *j) {
+#if MFMLORA_DEBUG > 0
+  Serial.println(F("Doing measurements"));
+#endif
+
+  doMeasurements();
+}
+
+void MFMLora::powerDownWrapper(osjob_t *j) {
+#if MFMLORA_DEBUG > 0
+  Serial.println(F("Powering down"));
+#endif
+
+  powerDown();
+  MFMLora::saveLMIC();
 }
 
 /**
@@ -171,19 +178,25 @@ void MFMLora::scheduleCycle(bool sleep)
  */
 void MFMLora::sendData(osjob_t *j)
 {
+#if MFMLORA_DEBUG > 0
+  Serial.println(F("Sending data"));
+#endif
+
   // Send tx data
   LMIC_setTxData2(1, MFMLora::txData, MFMLora::txDataLen, 0);
 }
 
 void MFMLora::sleep(osjob_t *j)
 {
+#if MFMLORA_DEBUG > 0
+  Serial.println(F("Entering sleep"));
+#endif
+
   Serial.flush();
-  noInterrupts();
   for (u16 i = 0; i < MFMLora::sleepIterations; i++)
   {
     LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
   }
-  interrupts();
 }
 
 /*
