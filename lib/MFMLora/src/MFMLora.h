@@ -2,6 +2,7 @@
 #define _MFMLORA_H_
 
 #include <Arduino.h>
+#include <EEPROM.h>
 #include <lmic.h>
 #include <hal/hal.h>
 #include <LowPower.h>
@@ -26,7 +27,9 @@ public:
 private:
   static void sendData(osjob_t *);
   static void sleep(osjob_t *);
-  static void LMICSetup();
+  static void setupLMIC(void);
+  static bool loadLMIC(void);
+  static void saveLMIC(void);
 
   static osjob_t doMeasurementsJob;
   static osjob_t sendDataJob;

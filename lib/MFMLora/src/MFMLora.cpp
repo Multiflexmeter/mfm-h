@@ -16,6 +16,8 @@ u1_t MFMLora::txData[MAX_LEN_PAYLOAD];
 u1_t MFMLora::txDataLen;
 const u16 PROGMEM MFMLora::sleepIterations = SLEEP_ITERATIONS;
 
+lmic_t EEMEM eeprom_lmic_state;
+
 /**
  * Setup the LoRaWAN framework and join the network
  * with OTAA joining
@@ -29,12 +31,56 @@ void MFMLora::setup(void)
   Serial.println(F(__TIME__));
 #endif
 
-  MFMLora::LMICSetup();
+  // If an LMIC State exists
+  if (MFMLora::loadLMIC()) {
+    MFMLora::scheduleCycle(false);
+  } else {
+    MFMLora::setupLMIC();
+  }
 }
 
-void MFMLora::LMICSetup() {
+/**
+ * Loads LMIC State from EEPROM
+ */
+bool MFMLora::loadLMIC(void) {
+  eeprom_read_block(&LMIC, &eeprom_lmic_state, sizeof(lmic_t));
+
+  // If debug, print (part-of) loaded LMIC state
+#if MFMLORA_DEBUG > 0
+  Serial.print(F("LMIC DevAddr: "));
+  Serial.println(LMIC.devaddr, HEX);
+  Serial.print(F("LMIC seqnoUp: "));
+  Serial.println(LMIC.seqnoUp);
+#endif
+
+  // If state was not joined to the network then load is unsuccesful
+  if (LMIC.devaddr == 0) {
+    return false;
+  }
+  // If there is a saved state initialize the system
+#if MFMLORA_DEBUG > 0
+  Serial.print(F("Recovering LMIC state"));
+#endif
+  os_init();
+  os_radio(RADIO_RST);
+  LMIC.opmode = OP_NONE;
+  return true;
+}
+
+/**
+ * Save LMIC State to EEPROM
+ */
+void MFMLora::saveLMIC(void) {
+  eeprom_write_block(&LMIC, &eeprom_lmic_state, sizeof(lmic_t));
+}
+
+/**
+ * Sets up the LMIC framework
+ */
+void MFMLora::setupLMIC(void) {
   os_init();
   LMIC_reset();
+
   // If there is no external clock, set a 2% clock_error
   // this relaxes the RX window timing.
 #ifdef INTERNAL_CLOCK
@@ -56,6 +102,8 @@ void MFMLora::LMICSetup() {
  */
 void MFMLora::onEvent(ev_t ev)
 {
+  MFMLora::saveLMIC();
+
   Serial.print(F("Ev: "));
   Serial.println(ev);
   switch (ev)
