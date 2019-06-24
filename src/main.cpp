@@ -145,7 +145,7 @@ void doBuzzerBeep(){
  */
 void setup()
 {
-  doBuzzerBeep();
+  // doBuzzerBeep();
   Serial.begin(9600);
   // Set pinmode
   pinMode(RELAY_PIN, OUTPUT);
