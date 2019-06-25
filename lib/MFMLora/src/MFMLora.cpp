@@ -69,8 +69,8 @@ bool MFMLora::loadLMIC(void) {
   os_init();
   os_radio(RADIO_RST);
   // Reset session dependent variables
-  LMIC.opmode = OP_NONE;
-  LMIC.txend = 0;
+  LMIC.opmode &= ~(OP_JOINING|OP_TXDATA|OP_POLL|OP_REJOIN|OP_SHUTDOWN|OP_TXRXPEND|OP_LINKDEAD|OP_TESTMODE|OP_SHUTDOWN);
+  LMIC.txend = os_getTime();
   for (u1_t i=0; i < MAX_BANDS; i++) {
     LMIC.bands[i].avail = 0;
   }
