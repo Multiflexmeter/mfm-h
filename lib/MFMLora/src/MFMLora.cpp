@@ -101,7 +101,7 @@ void MFMLora::setupLMIC(void) {
   // Start transmitting at SF 7
   LMIC_setDrTxpow(DR_SF7, 14);
   // Enable ADR
-  LMIC_setAdrMode(0);
+  LMIC_setAdrMode(1);
   LMIC_startJoining();
 }
 
