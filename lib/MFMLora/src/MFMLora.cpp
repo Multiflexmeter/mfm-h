@@ -65,9 +65,15 @@ bool MFMLora::loadLMIC(void) {
 #if MFMLORA_DEBUG > 0
   Serial.println(F("Recovering LMIC state"));
 #endif
+
   os_init();
   os_radio(RADIO_RST);
+  // Reset session dependent variables
   LMIC.opmode = OP_NONE;
+  LMIC.txend = 0;
+  for (u1_t i=0; i < MAX_BANDS; i++) {
+    LMIC.bands[i].avail = 0;
+  }
   return true;
 }
 
