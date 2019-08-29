@@ -117,6 +117,10 @@ void powerDown()
 {
   JSNV2.end();
   digitalWrite(RELAY_PIN, LOW);
+  digitalWrite(JSNV2_TX, LOW);
+  digitalWrite(JSNV2_RX, LOW);
+  digitalWrite(ONEWIRE_PIN, LOW); 
+  digitalWrite(BUZZER_PIN, LOW);
 }
 
 /**

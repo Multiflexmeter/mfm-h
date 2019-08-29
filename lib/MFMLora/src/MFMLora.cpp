@@ -177,6 +177,12 @@ void MFMLora::powerDownWrapper(osjob_t *j) {
 #endif
 
   powerDown();
+
+  // Pull DIO LoRa Module LOW
+  digitalWrite(PIN_DIO_0, LOW);
+  digitalWrite(PIN_DIO_1, LOW);
+  digitalWrite(PIN_DIO_2, LOW);
+
   MFMLora::saveLMIC();
 }
 
