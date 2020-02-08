@@ -35,6 +35,17 @@ void MFMLora::setup(void)
   Serial.println(F(__TIME__));
 #endif
 
+  // Print reset reason
+#if MFMLORA_DEBUG > 0
+  bool POR = MCUSR & (1 << PORF);
+  bool BOR = MCUSR & (1 << BORF);
+  bool WDR = MCUSR & (1 << WDRF);
+  //
+  Serial.print(F("We got POR: ")); Serial.println(POR ? F("YES") : F("NO"));
+  Serial.print(F(" and BOR: "));   Serial.println(BOR ? F("YES") : F("NO"));
+  Serial.print(F(" and WDR: "));   Serial.println(WDR ? F("YES") : F("NO"));
+#endif
+
   // If an LMIC State exists
   if (MFMLora::loadLMIC()) {
     MFMLora::scheduleCycle();
