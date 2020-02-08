@@ -14,7 +14,7 @@ osjob_t MFMLora::powerUpJob;
 */
 u1_t MFMLora::txData[MAX_LEN_PAYLOAD];
 u1_t MFMLora::txDataLen;
-const u16 PROGMEM MFMLora::sleepIterations = SLEEP_ITERATIONS;
+u16 MFMLora::sleepIterations = SLEEP_ITERATIONS;
 
 lmic_t EEMEM eeprom_lmic_state;
 
@@ -34,6 +34,9 @@ void MFMLora::setup(void)
   MCUSR = 0;
   wdt_disable();
 
+  // Reset sleep iterations if changed for rejoin
+  sleepIterations = SLEEP_ITERATIONS;
+
 #ifdef PRINT_BUILD_DATE_TIME
   Serial.print(F("Build at: "));
   Serial.print(F(__DATE__));
@@ -43,7 +46,6 @@ void MFMLora::setup(void)
 
   // Print reset reason
 #if MFMLORA_DEBUG > 0
-  //
   Serial.print(F("We got POR: ")); Serial.println(POR ? F("YES") : F("NO"));
   Serial.print(F(" and BOR: "));   Serial.println(BOR ? F("YES") : F("NO"));
   Serial.print(F(" and WDR: "));   Serial.println(WDR ? F("YES") : F("NO"));
@@ -130,16 +132,27 @@ void MFMLora::onEvent(ev_t ev)
   Serial.println(ev);
   switch (ev)
   {
+  
+  // WHEN JOIN Succeeds
   case EV_JOINED:
     Serial.println(F("JOINED"));
     // Schedule cycle without sleeping
     MFMLora::scheduleCycle();
     break;
 
+  // Send and receive complete
   case EV_TXCOMPLETE:
     Serial.println(F("TX_COMPLETE"));
     // Power down
     os_setCallback(&MFMLora::powerDownJob, MFMLora::powerDownWrapper);
+    os_setCallback(&MFMLora::sleepJob, MFMLora::sleep);
+    break;
+
+  // If join failed then sleeeeep
+  case EV_JOIN_FAILED:
+    Serial.println(F("JOIN_FAILED"));
+    // Sleep for rejoin time
+    sleepIterations = REJOIN_SLEEP_ITERATIONS;
     os_setCallback(&MFMLora::sleepJob, MFMLora::sleep);
     break;
 

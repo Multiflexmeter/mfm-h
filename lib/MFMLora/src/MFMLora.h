@@ -41,7 +41,7 @@ private:
   static osjob_t powerDownJob;
   static osjob_t powerUpJob;
 
-  const static u16 PROGMEM sleepIterations;
+  static u16 sleepIterations;
 };
 
 #endif

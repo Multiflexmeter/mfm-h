@@ -24,6 +24,11 @@
 #define SLEEP_ITERATIONS (112 - 6) // Adjust for incorrect timing
 #endif
 
+// How long to sleep before rejoining if a JOIN fails
+#ifndef REJOIN_SLEEP_ITERATIONS
+#define REJOIN_SLEEP_ITERATIONS 894
+#endif
+
 // Comment to disable printing the build date-time
 #define PRINT_BUILD_DATE_TIME
 
