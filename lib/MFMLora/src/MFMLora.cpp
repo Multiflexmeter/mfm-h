@@ -24,6 +24,12 @@ lmic_t EEMEM eeprom_lmic_state;
  */
 void MFMLora::setup(void)
 {
+  // is true when power was cut off
+  bool POR = MCUSR & (1 << PORF);
+#if MFMLORA_DEBUG > 0
+  bool WDR = MCUSR & (1 << WDRF);
+  bool BOR = MCUSR & (1 << BORF);
+#endif
   // Prevent watchdog reset loop
   MCUSR = 0;
   wdt_disable();
@@ -37,9 +43,6 @@ void MFMLora::setup(void)
 
   // Print reset reason
 #if MFMLORA_DEBUG > 0
-  bool POR = MCUSR & (1 << PORF);
-  bool BOR = MCUSR & (1 << BORF);
-  bool WDR = MCUSR & (1 << WDRF);
   //
   Serial.print(F("We got POR: ")); Serial.println(POR ? F("YES") : F("NO"));
   Serial.print(F(" and BOR: "));   Serial.println(BOR ? F("YES") : F("NO"));
@@ -47,7 +50,7 @@ void MFMLora::setup(void)
 #endif
 
   // If an LMIC State exists
-  if (MFMLora::loadLMIC()) {
+  if (!POR && MFMLora::loadLMIC()) {
     MFMLora::scheduleCycle();
   } else {
     MFMLora::setupLMIC();
