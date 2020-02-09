@@ -151,7 +151,12 @@ void MFMLora::onEvent(ev_t ev)
 
   // If join failed then sleeeeep
   case EV_JOIN_FAILED:
+  case EV_REJOIN_FAILED:
+  case EV_LINK_DEAD:
     Serial.println(F("JOIN_FAILED"));
+    // Reset State (causing a rejoin on next reset)
+    LMIC_reset();
+    saveLMIC();
     // Sleep for rejoin time
     sleepIterations = REJOIN_SLEEP_ITERATIONS;
     os_setCallback(&MFMLora::sleepJob, MFMLora::sleep);
