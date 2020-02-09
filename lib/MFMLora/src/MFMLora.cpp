@@ -15,6 +15,7 @@ osjob_t MFMLora::powerUpJob;
 u1_t MFMLora::txData[MAX_LEN_PAYLOAD];
 u1_t MFMLora::txDataLen;
 u16 MFMLora::sleepIterations = SLEEP_ITERATIONS;
+bool MFMLora::PowerOnReset = false;
 
 lmic_t EEMEM eeprom_lmic_state;
 
@@ -25,7 +26,7 @@ lmic_t EEMEM eeprom_lmic_state;
 void MFMLora::setup(void)
 {
   // is true when power was cut off
-  bool POR = MCUSR & (1 << PORF);
+  PowerOnReset = MCUSR & (1 << PORF);
 #if MFMLORA_DEBUG > 0
   bool WDR = MCUSR & (1 << WDRF);
   bool BOR = MCUSR & (1 << BORF);
@@ -52,7 +53,7 @@ void MFMLora::setup(void)
 #endif
 
   // If an LMIC State exists
-  if (!POR && MFMLora::loadLMIC()) {
+  if (!PowerOnReset && MFMLora::loadLMIC()) {
     MFMLora::scheduleCycle();
   } else {
     MFMLora::setupLMIC();

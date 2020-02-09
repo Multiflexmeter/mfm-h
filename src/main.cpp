@@ -85,6 +85,11 @@ unsigned short medianUS(unsigned short (*func)(), int count, int interval)
  */
 void doMeasurements()
 {
+  // DS18B20 First message after power loss is always -127, thus read twice
+  if (MFMLora::PowerOnReset) {
+    getTemperature();
+  }
+  // Setup packet
   Packet packet{
       medianUS(getDistance, 13, 10),
       getTemperature()
