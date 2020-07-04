@@ -1,3 +1,5 @@
+#include "lmic.h"
+
 #ifndef _MFMLORA_CONFIG_H_
 #define _MFMLORA_CONFIG_H_
 
@@ -35,6 +37,14 @@
 // Comment if using external clock
 #define INTERNAL_CLOCK
 
+// This will trigger a rejoin if an ACK request is not answered
+// for x amount of uplinks
+#define LMIC_LINKCHECK 0
+
+// #define USE_KPN
+#define USE_TTN
+
+
 /*
   Below are the more advanced settings.
   Don't just change them without knowing what you are doing!
@@ -60,4 +70,21 @@
 #define PIN_DIO_2 6
 #endif
 
+#endif
+
+/*
+  Below are derived settings, you should not have to change them.
+*/
+
+#if defined(USE_KPN) && defined(USE_TTN)
+#error "Either USE_KPN or USE_TTN has to be defined, not both!"
+#endif
+
+#ifdef USE_TTN
+  #define DN2DR DR_SF9
+  #define DN2Freq EU868_F6
+#endif
+#ifdef USE_KPN
+  #define DN2DR DR_SF12
+  #define DN2Freq EU868_F6
 #endif

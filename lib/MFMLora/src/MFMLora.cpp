@@ -47,7 +47,7 @@ void MFMLora::setup(void)
 
   // Print reset reason
 #if MFMLORA_DEBUG > 0
-  Serial.print(F("We got POR: ")); Serial.println(POR ? F("YES") : F("NO"));
+  Serial.print(F("We got POR: ")); Serial.println(PowerOnReset ? F("YES") : F("NO"));
   Serial.print(F(" and BOR: "));   Serial.println(BOR ? F("YES") : F("NO"));
   Serial.print(F(" and WDR: "));   Serial.println(WDR ? F("YES") : F("NO"));
 #endif
@@ -113,8 +113,8 @@ void MFMLora::setupLMIC(void) {
 #ifdef INTERNAL_CLOCK
   LMIC_setClockError(MAX_CLOCK_ERROR * 2 / 100);
 #endif
-  // RX Window at SF 9
-  LMIC.dn2Dr = DR_SF9;
+  LMIC.dn2Dr = DN2DR;
+  LMIC.dn2Freq = DN2Freq;
   // Start transmitting at SF 7
   LMIC_setDrTxpow(DR_SF7, 14);
   // Enable ADR
@@ -137,6 +137,7 @@ void MFMLora::onEvent(ev_t ev)
   // WHEN JOIN Succeeds
   case EV_JOINED:
     Serial.println(F("JOINED"));
+    LMIC_setLinkCheckMode(LMIC_LINKCHECK);
     // Schedule cycle without sleeping
     MFMLora::scheduleCycle();
     break;
