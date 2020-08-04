@@ -36,10 +36,10 @@
 #define BME_MOSI 11
 #define BME_CS 10
 #define RELAY_PIN 2
-#define ONEWIRE_PIN 5
-#define BMP_PIN 14 //or A0 (DIO0)
+#define ONEWIRE_PIN 17  //or A3
+#define BMP_PIN 14      //or A0 (DIO0)
 
-#define SEALEVELPRESSURE_HPA (1011.85)
+#define SEALEVELPRESSURE_HPA (1018.26)
 #define PRESSURE_LOW_mV 500
 #define PRESSURE_HIGH_mV 4500
 #define PRESSURE_LOW_cm 0
@@ -61,9 +61,11 @@ Adafruit_BMP280 bmp; // I2C
 
 float getTemperature(void)
 {
-    sensors.begin();
+    float temp = 0;
     sensors.requestTemperatures();
-    float temp = sensors.getTempCByIndex(0);
+    sensors.requestTemperatures();
+    temp = sensors.getTempCByIndex(0);
+    temp = sensors.getTempCByIndex(0);
     Serial.print("Watertemperature: ");
     Serial.print(temp);
     Serial.println(" Celcius");
@@ -106,7 +108,7 @@ void WakeupInstruments(){
     digitalWrite(RELAY_PIN, HIGH);
     digitalWrite(BMP_PIN, HIGH);
     power_twi_enable(); //Enable TWI (I2C)
-   // Wire.begin();
+    Wire.begin();
 
     delay(100);
 
@@ -120,7 +122,8 @@ void WakeupInstruments(){
                     Adafruit_BMP280::FILTER_X16,      /* Filtering. */
                     Adafruit_BMP280::STANDBY_MS_500);  /* Standby time. */
 
-    ads.begin();    //start external ADC
+    ads.begin();        //start external ADC
+    sensors.begin();    //start DS18B20
 }
 
 void Sleep(uint16_t sleeptime){
@@ -227,7 +230,8 @@ void loop() {
     printValues();
     ReadPressureSensor();
     getTemperature();
+    getTemperature();
     Serial.println();
    // delay(4000);
-    Sleep(3);
+    Sleep(2);
 }
