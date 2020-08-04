@@ -1,0 +1,21 @@
+{
+    "name": "MFM-LoRa",
+    "authors": [
+        {
+            "name": "Tim van Osch",
+            "email": "timvosch@pollex.nl",
+            "url": "https://pollex.nl/",
+            "maintainer": true
+        }
+    ],
+    "dependencies": [
+        {
+            "name": "LMIC-Arduino",
+            "version": "1.5.0+arduino-2"
+        },
+        {
+            "name": "Low-Power",
+            "version": "1.6"
+        }
+    ]
+}
