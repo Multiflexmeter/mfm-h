@@ -22,9 +22,9 @@ public:
   static void onEvent(ev_t);
   static void loop();
   static void scheduleCycle();
-  static u1_t txData[MAX_LEN_PAYLOAD];
+  static u1_t txData[50];
   static u1_t txDataLen;
-  
+
   static bool PowerOnReset;
 
 private:

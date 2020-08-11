@@ -6,15 +6,24 @@
 // Get these keys from your LoRaWAN Network provider
 
 #ifndef DEV_EUI
-#define DEV_EUI { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+#define DEV_EUI                                    \
+  {                                                \
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 \
+  }
 #endif
 
 #ifndef APP_EUI
-#define APP_EUI { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+#define APP_EUI                                    \
+  {                                                \
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 \
+  }
 #endif
 
 #ifndef APP_KEY
-#define APP_KEY { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+#define APP_KEY                                                                                    \
+  {                                                                                                \
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 \
+  }
 #endif
 
 #ifndef MFMLORA_DEBUG
@@ -44,7 +53,6 @@
 // #define USE_KPN
 #define USE_TTN
 
-
 /*
   Below are the more advanced settings.
   Don't just change them without knowing what you are doing!
@@ -70,8 +78,6 @@
 #define PIN_DIO_2 6
 #endif
 
-#endif
-
 /*
   Below are derived settings, you should not have to change them.
 */
@@ -81,10 +87,12 @@
 #endif
 
 #ifdef USE_TTN
-  #define DN2DR DR_SF9
-  #define DN2Freq EU868_F6
+#define DN2DR DR_SF9
+#define DN2Freq EU868_F6
 #endif
 #ifdef USE_KPN
-  #define DN2DR DR_SF12
-  #define DN2Freq EU868_F6
+#define DN2DR DR_SF12
+#define DN2Freq EU868_F6
+#endif
+
 #endif
