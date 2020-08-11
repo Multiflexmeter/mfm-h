@@ -20,19 +20,20 @@ unsigned short medianUS(unsigned short (*func)(), int count, int interval)
  * 
  * Collected data must be copied to `LMIC.frame`
  */
-void doMeasurements()
+uint8_t doMeasurements(uint8_t *data)
 {
   // DS18B20 First message after power loss is always -127, thus read twice
   if (MFMLora::PowerOnReset)
   {
     // getTemperature();
   }
+
   // Setup packet
   Packet packet{};
 
-  // Temporary data preparation
-  memcpy(MFMLora::txData, (void *)&packet, sizeof(packet));
-  MFMLora::txDataLen = sizeof(packet);
+  // Return measurement packet
+  memcpy(data, (void *)&packet, sizeof(packet));
+  return sizeof(packet);
 }
 
 /**

@@ -4,7 +4,6 @@
   Define MFMLora jobs
 */
 osjob_t MFMLora::doMeasurementsJob;
-osjob_t MFMLora::sendDataJob;
 osjob_t MFMLora::sleepJob;
 osjob_t MFMLora::powerDownJob;
 osjob_t MFMLora::powerUpJob;
@@ -12,12 +11,10 @@ osjob_t MFMLora::powerUpJob;
 /*
   Define MFMLora properties
 */
-u1_t MFMLora::txData[50];
-u1_t MFMLora::txDataLen;
 u16 MFMLora::sleepIterations = SLEEP_ITERATIONS;
 bool MFMLora::PowerOnReset = false;
 
-lmic_t EEMEM eeprom_lmic_state;
+EEMEM lmic_t eeprom_lmic_state;
 
 /**
  * Setup the LoRaWAN framework and join the network
@@ -197,7 +194,6 @@ void MFMLora::scheduleCycle()
 {
   os_setCallback(&MFMLora::powerUpJob, MFMLora::powerUpWrapper);
   os_setCallback(&MFMLora::doMeasurementsJob, MFMLora::doMeasurementsWrapper);
-  os_setCallback(&MFMLora::sendDataJob, MFMLora::sendData);
 }
 
 void MFMLora::powerUpWrapper(osjob_t *j)
@@ -211,11 +207,19 @@ void MFMLora::powerUpWrapper(osjob_t *j)
 
 void MFMLora::doMeasurementsWrapper(osjob_t *j)
 {
+  uint8_t data[50];
+  uint8_t dataLen;
+
 #if MFMLORA_DEBUG > 0
   Serial.println(F("Doing measurements"));
 #endif
+  dataLen = doMeasurements(&data[0]);
 
-  doMeasurements();
+  // Send tx data
+#if MFMLORA_DEBUG > 0
+  Serial.println(F("Sending data"));
+#endif
+  LMIC_setTxData2(1, data, dataLen, 0);
 }
 
 void MFMLora::powerDownWrapper(osjob_t *j)
@@ -232,22 +236,6 @@ void MFMLora::powerDownWrapper(osjob_t *j)
   digitalWrite(PIN_DIO_2, LOW);
 
   MFMLora::saveLMIC();
-}
-
-/**
- * Sends MFMLora::txData to uplink
- * 
- * Fired after measurements have been copied to
- * txData by doMeasurements.
- */
-void MFMLora::sendData(osjob_t *j)
-{
-#if MFMLORA_DEBUG > 0
-  Serial.println(F("Sending data"));
-#endif
-
-  // Send tx data
-  LMIC_setTxData2(1, MFMLora::txData, MFMLora::txDataLen, 0);
 }
 
 void MFMLora::sleep(osjob_t *j)

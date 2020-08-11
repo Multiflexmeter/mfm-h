@@ -10,7 +10,7 @@
 
 #include "MFMLoraConfig.h"
 
-extern void doMeasurements();
+extern uint8_t doMeasurements(uint8_t *data);
 extern void powerDown();
 extern void powerUp();
 
@@ -22,8 +22,6 @@ public:
   static void onEvent(ev_t);
   static void loop();
   static void scheduleCycle();
-  static u1_t txData[50];
-  static u1_t txDataLen;
 
   static bool PowerOnReset;
 
@@ -38,7 +36,6 @@ private:
   static void saveLMIC(void);
 
   static osjob_t doMeasurementsJob;
-  static osjob_t sendDataJob;
   static osjob_t sleepJob;
   static osjob_t powerDownJob;
   static osjob_t powerUpJob;
