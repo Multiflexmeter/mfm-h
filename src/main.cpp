@@ -87,20 +87,25 @@ void printValues()
     Serial.println(" m");
 }
 
-void ReadPressureSensor()
+/**
+ * Fired when data is to be collected.
+ * 
+ * Collected data must be copied to `LMIC.frame`
+ */
+uint8_t doMeasurements(uint8_t *data)
 {
-    int16_t adc0;
-    adc0 = ads.readADC_SingleEnded(0);
-    int16_t depth = 0.1875F * adc0; //see table in setup for which value to multiply with, in this case with 1875mV
+    // DS18B20 First message after power loss is always -127, thus read twice
+    if (MFMLora::PowerOnReset)
+    {
+        // getTemperature();
+    }
 
-    double depth_cm = Interpolation::Linear(xValues, yValues, numValues, depth, true);
+    // Setup packet
+    Packet packet{};
 
-    Serial.print("depth: ");
-    Serial.print(depth);
-    Serial.println("mV");
-    Serial.print("depth cm: ");
-    Serial.print(depth_cm);
-    Serial.println("cm");
+    // Return measurement packet
+    memcpy(data, (void *)&packet, sizeof(packet));
+    return sizeof(packet);
 }
 
 void WakeupInstruments()

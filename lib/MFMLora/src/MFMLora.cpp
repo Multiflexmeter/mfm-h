@@ -4,7 +4,6 @@
   Define MFMLora jobs
 */
 osjob_t MFMLora::doMeasurementsJob;
-osjob_t MFMLora::sendDataJob;
 osjob_t MFMLora::sleepJob;
 osjob_t MFMLora::powerDownJob;
 osjob_t MFMLora::powerUpJob;
@@ -12,12 +11,10 @@ osjob_t MFMLora::powerUpJob;
 /*
   Define MFMLora properties
 */
-u1_t MFMLora::txData[MAX_LEN_PAYLOAD];
-u1_t MFMLora::txDataLen;
 u16 MFMLora::sleepIterations = SLEEP_ITERATIONS;
 bool MFMLora::PowerOnReset = false;
 
-lmic_t EEMEM eeprom_lmic_state;
+EEMEM lmic_t eeprom_lmic_state;
 
 /**
  * Setup the LoRaWAN framework and join the network
@@ -47,15 +44,21 @@ void MFMLora::setup(void)
 
   // Print reset reason
 #if MFMLORA_DEBUG > 0
-  Serial.print(F("We got POR: ")); Serial.println(PowerOnReset ? F("YES") : F("NO"));
-  Serial.print(F(" and BOR: "));   Serial.println(BOR ? F("YES") : F("NO"));
-  Serial.print(F(" and WDR: "));   Serial.println(WDR ? F("YES") : F("NO"));
+  Serial.print(F("We got POR: "));
+  Serial.println(PowerOnReset ? F("YES") : F("NO"));
+  Serial.print(F(" and BOR: "));
+  Serial.println(BOR ? F("YES") : F("NO"));
+  Serial.print(F(" and WDR: "));
+  Serial.println(WDR ? F("YES") : F("NO"));
 #endif
 
   // If an LMIC State exists
-  if (!PowerOnReset && MFMLora::loadLMIC()) {
+  if (!PowerOnReset && MFMLora::loadLMIC())
+  {
     MFMLora::scheduleCycle();
-  } else {
+  }
+  else
+  {
     MFMLora::setupLMIC();
   }
 }
@@ -63,7 +66,8 @@ void MFMLora::setup(void)
 /**
  * Loads LMIC State from EEPROM
  */
-bool MFMLora::loadLMIC(void) {
+bool MFMLora::loadLMIC(void)
+{
   eeprom_read_block(&LMIC, &eeprom_lmic_state, sizeof(lmic_t));
 
   // If debug, print (part-of) loaded LMIC state
@@ -75,7 +79,8 @@ bool MFMLora::loadLMIC(void) {
 #endif
 
   // If state was not joined to the network then load is unsuccesful
-  if (LMIC.devaddr == 0) {
+  if (LMIC.devaddr == 0)
+  {
     return false;
   }
   // If there is a saved state initialize the system
@@ -86,9 +91,10 @@ bool MFMLora::loadLMIC(void) {
   os_init();
   os_radio(RADIO_RST);
   // Reset session dependent variables
-  LMIC.opmode &= ~(OP_JOINING|OP_TXDATA|OP_POLL|OP_REJOIN|OP_SHUTDOWN|OP_TXRXPEND|OP_LINKDEAD|OP_TESTMODE|OP_SHUTDOWN);
+  LMIC.opmode &= ~(OP_JOINING | OP_TXDATA | OP_POLL | OP_REJOIN | OP_SHUTDOWN | OP_TXRXPEND | OP_LINKDEAD | OP_TESTMODE | OP_SHUTDOWN);
   LMIC.txend = os_getTime();
-  for (u1_t i=0; i < MAX_BANDS; i++) {
+  for (u1_t i = 0; i < MAX_BANDS; i++)
+  {
     LMIC.bands[i].avail = 0;
   }
   return true;
@@ -97,14 +103,16 @@ bool MFMLora::loadLMIC(void) {
 /**
  * Save LMIC State to EEPROM
  */
-void MFMLora::saveLMIC(void) {
+void MFMLora::saveLMIC(void)
+{
   eeprom_write_block(&LMIC, &eeprom_lmic_state, sizeof(lmic_t));
 }
 
 /**
  * Sets up the LMIC framework
  */
-void MFMLora::setupLMIC(void) {
+void MFMLora::setupLMIC(void)
+{
   os_init();
   LMIC_reset();
 
@@ -133,7 +141,7 @@ void MFMLora::onEvent(ev_t ev)
   Serial.println(ev);
   switch (ev)
   {
-  
+
   // WHEN JOIN Succeeds
   case EV_JOINED:
     Serial.println(F("JOINED"));
@@ -186,10 +194,10 @@ void MFMLora::scheduleCycle()
 {
   os_setCallback(&MFMLora::powerUpJob, MFMLora::powerUpWrapper);
   os_setCallback(&MFMLora::doMeasurementsJob, MFMLora::doMeasurementsWrapper);
-  os_setCallback(&MFMLora::sendDataJob, MFMLora::sendData);
 }
 
-void MFMLora::powerUpWrapper(osjob_t *j) {
+void MFMLora::powerUpWrapper(osjob_t *j)
+{
 #if MFMLORA_DEBUG > 0
   Serial.println(F("Powering up"));
 #endif
@@ -197,15 +205,25 @@ void MFMLora::powerUpWrapper(osjob_t *j) {
   powerUp();
 }
 
-void MFMLora::doMeasurementsWrapper(osjob_t *j) {
+void MFMLora::doMeasurementsWrapper(osjob_t *j)
+{
+  uint8_t data[50];
+  uint8_t dataLen;
+
 #if MFMLORA_DEBUG > 0
   Serial.println(F("Doing measurements"));
 #endif
+  dataLen = doMeasurements(&data[0]);
 
-  doMeasurements();
+  // Send tx data
+#if MFMLORA_DEBUG > 0
+  Serial.println(F("Sending data"));
+#endif
+  LMIC_setTxData2(1, data, dataLen, 0);
 }
 
-void MFMLora::powerDownWrapper(osjob_t *j) {
+void MFMLora::powerDownWrapper(osjob_t *j)
+{
 #if MFMLORA_DEBUG > 0
   Serial.println(F("Powering down"));
 #endif
@@ -218,22 +236,6 @@ void MFMLora::powerDownWrapper(osjob_t *j) {
   digitalWrite(PIN_DIO_2, LOW);
 
   MFMLora::saveLMIC();
-}
-
-/**
- * Sends MFMLora::txData to uplink
- * 
- * Fired after measurements have been copied to
- * txData by doMeasurements.
- */
-void MFMLora::sendData(osjob_t *j)
-{
-#if MFMLORA_DEBUG > 0
-  Serial.println(F("Sending data"));
-#endif
-
-  // Send tx data
-  LMIC_setTxData2(1, MFMLora::txData, MFMLora::txDataLen, 0);
 }
 
 void MFMLora::sleep(osjob_t *j)
