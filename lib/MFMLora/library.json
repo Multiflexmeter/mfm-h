@@ -11,7 +11,7 @@
     "dependencies": [
         {
             "name": "LMIC-Arduino",
-            "version": "1.5.0+arduino-2"
+            "version": "1.5.0+arduino-3"
         },
         {
             "name": "Low-Power",
