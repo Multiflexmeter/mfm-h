@@ -207,19 +207,18 @@ void MFMLora::powerUpWrapper(osjob_t *j)
 
 void MFMLora::doMeasurementsWrapper(osjob_t *j)
 {
-  uint8_t data[50];
   uint8_t dataLen;
 
 #if MFMLORA_DEBUG > 0
   Serial.println(F("Doing measurements"));
 #endif
-  dataLen = doMeasurements(&data[0]);
+  dataLen = doMeasurements(&LMIC.frame[0]);
 
   // Send tx data
 #if MFMLORA_DEBUG > 0
   Serial.println(F("Sending data"));
 #endif
-  LMIC_setTxData2(1, data, dataLen, 0);
+  LMIC_setTxData2(1, LMIC.frame, dataLen, 0);
 }
 
 void MFMLora::powerDownWrapper(osjob_t *j)
