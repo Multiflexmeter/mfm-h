@@ -8,11 +8,12 @@
 #include <SPI.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP280.h>
-#include <Adafruit_ADS1015.h>
 #include <InterpolationLib.h>
 #include <DallasTemperature.h>
 #include <LowPower.h>
 #include <avr/power.h>
+
+#include "pressure_sensor.h"
 
 #define WARMUP_TIME_MS 10
 

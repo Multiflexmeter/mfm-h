@@ -32,7 +32,7 @@
 
 // 1 Sleep iteration is 8 seconds.
 #ifndef SLEEP_ITERATIONS
-#define SLEEP_ITERATIONS (112 - 6) // Adjust for incorrect timing
+#define SLEEP_ITERATIONS 2 // Adjust for incorrect timing
 #endif
 
 // How long to sleep before rejoining if a JOIN fails

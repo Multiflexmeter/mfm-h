@@ -1,19 +1,13 @@
 #include <main.h>
 
+Adafruit_BMP280 bmp; // I2C
+
 struct Packet
 {
+    uint16_t a;
+    float b;
+    float c;
 };
-
-unsigned short medianUS(unsigned short (*func)(), int count, int interval)
-{
-    MedianFilter median(count, 0);
-    for (int i = 0; i < count; i++)
-    {
-        median.in(func());
-        delay(interval);
-    }
-    return (unsigned short)median.out();
-}
 
 /**
  * Fired when data is to be collected.
@@ -22,14 +16,13 @@ unsigned short medianUS(unsigned short (*func)(), int count, int interval)
  */
 uint8_t doMeasurements(uint8_t *data)
 {
-    // DS18B20 First message after power loss is always -127, thus read twice
-    if (MFMLora::PowerOnReset)
-    {
-        // getTemperature();
-    }
 
     // Setup packet
-    Packet packet{};
+    Packet packet{
+        doPressureMeasurement(),
+        bmp.readTemperature(),
+        bmp.readPressure(),
+    };
 
     // Return measurement packet
     memcpy(data, (void *)&packet, sizeof(packet));
@@ -70,6 +63,24 @@ void setup()
     pinMode(RELAY_PIN, OUTPUT);
     // Enable instruments
     digitalWrite(RELAY_PIN, HIGH);
+
+    delay(10);
+
+    // Initialize BMP280
+    if (!bmp.begin())
+    {
+        Serial.println(F("Could not find a valid BMP280 sensor, check wiring!"));
+        while (1)
+            ;
+    }
+
+    /* Default settings from datasheet. */
+    bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     /* Operating Mode. */
+                    Adafruit_BMP280::SAMPLING_X2,     /* Temp. oversampling */
+                    Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */
+                    Adafruit_BMP280::FILTER_X16,      /* Filtering. */
+                    Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
+
     // Fire as last
     MFMLora::setup();
 }
