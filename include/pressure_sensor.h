@@ -12,6 +12,7 @@ extern "C"
 #endif
 
   uint16_t doPressureMeasurement();
+  void pressureStop();
 
 #ifdef __cplusplus
 }

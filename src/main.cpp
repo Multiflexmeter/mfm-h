@@ -1,13 +1,30 @@
 #include <main.h>
 
-Adafruit_BMP280 bmp; // I2C
+// Adafruit_BMP280 bmp; // I2C
+BMP280_DEV bmp;
 
 struct Packet
 {
-    uint16_t a;
-    float b;
-    float c;
+  uint16_t a;
+  float b;
+  float c;
 };
+
+void twi_disable()
+{
+  TWCR &= ~(1 << TWEN);
+  power_twi_disable();
+
+  // Disable PC5(SCL) PC4(SDA)
+  DDRC |= (1 << PC4) | (1 << PC5);
+  PORTC |= (1 << PC4) | (1 << PC5);
+}
+
+void twi_enable()
+{
+  power_twi_enable();
+  TWCR |= (1 << TWEN);
+}
 
 /**
  * Fired when data is to be collected.
@@ -16,17 +33,28 @@ struct Packet
  */
 uint8_t doMeasurements(uint8_t *data)
 {
+  float temp, pres;
+  bmp.startForcedConversion();
+  uint8_t retries = 0;
+  while (!bmp.getTempPres(temp, pres) && retries++ < 3)
+  {
+    delay(10);
+  };
+  if (retries >= 3)
+  {
+    Serial.println(F("Failed to get TempPres"));
+  }
 
-    // Setup packet
-    Packet packet{
-        doPressureMeasurement(),
-        bmp.readTemperature(),
-        bmp.readPressure(),
-    };
+  // Setup packet
+  Packet packet{
+      doPressureMeasurement(),
+      temp,
+      pres,
+  };
 
-    // Return measurement packet
-    memcpy(data, (void *)&packet, sizeof(packet));
-    return sizeof(packet);
+  // Return measurement packet
+  memcpy(data, (void *)&packet, sizeof(packet));
+  return sizeof(packet);
 }
 
 /**
@@ -36,9 +64,22 @@ uint8_t doMeasurements(uint8_t *data)
  */
 void powerUp()
 {
-    digitalWrite(RELAY_PIN, HIGH);
-    // Wait for the JSN to come online
-    delay(WARMUP_TIME_MS);
+  digitalWrite(RELAY_PIN, HIGH);
+  twi_enable();
+  // Wait for the JSN to come online
+  delay(WARMUP_TIME_MS);
+
+  uint8_t success = bmp.begin(
+      Mode::FORCED_MODE,
+      Oversampling::OVERSAMPLING_X2,
+      Oversampling::OVERSAMPLING_X2,
+      IIRFilter::IIR_FILTER_16,
+      TimeStandby::TIME_STANDBY_250MS);
+
+  if (!success)
+  {
+    Serial.println(F("BMP280 begin failed"));
+  }
 }
 
 /**
@@ -48,8 +89,16 @@ void powerUp()
  */
 void powerDown()
 {
-    digitalWrite(RELAY_PIN, LOW);
-    digitalWrite(ONEWIRE_PIN, LOW);
+  bmp.stopConversion();
+  pressureStop();
+  twi_disable();
+  // Pull all low
+  DDRB = 1;
+  DDRC = 1;
+  DDRD = 1;
+  PORTB = 0;
+  PORTC = 0;
+  PORTD = 0;
 }
 
 /**
@@ -57,32 +106,18 @@ void powerDown()
  */
 void setup()
 {
-    // doBuzzerBeep();
-    Serial.begin(9600);
-    // Set pinmode
-    pinMode(RELAY_PIN, OUTPUT);
-    // Enable instruments
-    digitalWrite(RELAY_PIN, HIGH);
+  pinMode(ONEWIRE_PIN, OUTPUT);
+  pinMode(RELAY_PIN, OUTPUT);
 
-    delay(10);
+  Serial.begin(9600);
+  // Enable instruments
+  digitalWrite(RELAY_PIN, HIGH);
+  digitalWrite(ONEWIRE_PIN, LOW);
 
-    // Initialize BMP280
-    if (!bmp.begin())
-    {
-        Serial.println(F("Could not find a valid BMP280 sensor, check wiring!"));
-        while (1)
-            ;
-    }
+  delay(10);
 
-    /* Default settings from datasheet. */
-    bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     /* Operating Mode. */
-                    Adafruit_BMP280::SAMPLING_X2,     /* Temp. oversampling */
-                    Adafruit_BMP280::SAMPLING_X16,    /* Pressure oversampling */
-                    Adafruit_BMP280::FILTER_X16,      /* Filtering. */
-                    Adafruit_BMP280::STANDBY_MS_500); /* Standby time. */
-
-    // Fire as last
-    MFMLora::setup();
+  // Fire as last
+  MFMLora::setup();
 }
 
 /**
@@ -90,5 +125,5 @@ void setup()
  */
 void loop()
 {
-    MFMLora::loop();
+  MFMLora::loop();
 }

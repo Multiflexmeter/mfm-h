@@ -7,6 +7,7 @@
 #include <lmic.h>
 #include <hal/hal.h>
 #include <LowPower.h>
+#include <SPI.h>
 
 #include "MFMLoraConfig.h"
 

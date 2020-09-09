@@ -7,7 +7,8 @@
 #include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_Sensor.h>
-#include <Adafruit_BMP280.h>
+// #include <Adafruit_BMP280.h>
+#include <BMP280_DEV.h>
 #include <InterpolationLib.h>
 #include <DallasTemperature.h>
 #include <LowPower.h>
