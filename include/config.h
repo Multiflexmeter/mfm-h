@@ -5,7 +5,7 @@
   Generic configuration
 */
 // Whether to output debug information to the serial output
-// #define DEBUG
+#define DEBUG
 // The lowest DR (thus highest SF) the device will join and TX at
 #define MIN_LORA_DR 0
 // Whether to print the firmware its build date/time to the serial on power on

@@ -113,6 +113,68 @@ uint16_t get_distance_to_water(void)
   return distance / 10;
 }
 
+
+float get_distance_to_water_SEN0313 (){
+
+  unsigned char data[4]={};
+  float distance;
+
+  //digitalWrite(TX,tempCorrect);
+  delay(150);
+
+  //clear buffer
+  while(JSN.available() > 0) {
+    char clear = JSN.read();
+  }
+
+  //wait for new measurement
+  while(JSN.available() <= 0) {
+    delay(2);
+  }
+  
+  //read until startbyte 0xFF is received
+  do{
+    data[0]=JSN.read();
+    //  Serial.print("data0:");
+    //  Serial.println(data[0],HEX);
+     delay(2);
+  }
+  while(data[0] != 0xff);
+  
+  //read the remaining 3 bytes
+  int i;
+  for(i=1;i<4;i++)
+  {
+    data[i]=JSN.read();
+    // Serial.print("data" + String(i)+ ":");
+    // Serial.println(data[i],HEX);
+    delay(2);
+  }
+  JSN.flush();
+
+  int sum;
+  sum=(data[0]+data[1]+data[2])&0x00FF;
+  // Serial.println("SUM:" + String(sum));
+  if(sum==data[3])
+  {
+    distance=(data[1]<<8)+data[2];
+    Serial.println("DISTANCE:" + String(distance));
+    if(distance>280)
+    {
+      //add 0.5 to round
+      return (uint16_t)(distance/10 + 0.5);
+    }
+    else 
+    {
+      Serial.println("...");
+      Serial.println("Below the lower limit");      
+      return 0;  
+    }
+  }
+  Serial.println("ERROR");
+  return 0;
+}
+
 /**
  * 
  */
@@ -121,8 +183,9 @@ uint16_t get_distance_to_water_median(uint8_t n)
   MedianFilter m(n, 0);
   for (uint8_t i = 0; i < n; i++)
   {
-    m.in(get_distance_to_water());
+    m.in(get_distance_to_water_SEN0313());
     delay(10);
   }
+  Serial.println("FINAL DISTANCE:" + String(m.out()));
   return m.out();
 }
