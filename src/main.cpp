@@ -6,6 +6,7 @@
 #include "rom_conf.h"
 #include "debug.h"
 #include "board.h"
+#include "DallasTemperature.h"
 
 const lmic_pinmap lmic_pins = {
     .nss = PIN_NSS,
@@ -15,12 +16,71 @@ const lmic_pinmap lmic_pins = {
 };
 osjob_t job;
 
+// OneWire ow(17);
+// DallasTemperature ds(&ow, false);
+
+// uint8_t addrBuffer[24] = {0};
+
+void printAddr(uint8_t *addr) {
+  for (uint8_t i = 0; i < 8; i++)
+  {
+    Serial.print("0x");
+    if (addr[i] < 0x10) Serial.print("0");
+    Serial.print(addr[i], HEX);
+    if (i < 7) Serial.print(", ");
+  }
+}
+
+// uint8_t findDevices()
+// {
+
+//   uint8_t count = 0;
+
+
+//   if (ow.search(&addrBuffer[count*8]))
+//   {
+//     Serial.println("[][8] = {");
+//     do {
+//       count++;
+//       Serial.println("  {");
+//       printAddr(&addrBuffer[count*8]);
+//       Serial.println("  },");
+//     } while (ow.search(&addrBuffer[count*8]));
+
+//     Serial.println("};");
+//     Serial.print("// nr devices found: ");
+//     Serial.println(count);
+//   }
+
+//   return count;
+// }
+
 /**
  * 
  */
 void setup(void)
 {
   board_setup();
+
+  // Serial.begin(115200);
+  // Serial.println("Hello world!");
+  // uint8_t count = findDevices();
+  // float temp = 0;
+  // for (;;) {
+  //   Serial.print("\n\n");
+  //   ds.requestTemperatures();
+  //   delay(500);
+  //   for (uint8_t ix = 0; ix < count; ix++) {
+  //     temp = ds.getTempC(&addrBuffer[ix * 8]);
+  //     printAddr(&addrBuffer[ix * 8]);
+  //     Serial.print(": ");
+  //     Serial.print(temp);
+  //     Serial.print("\n");
+  //   }
+  // }
+
+  // // TODO: Remove
+  // return;
 
 #if defined(DEBUG) || defined(PRINT_BUILD_DATE_TIME)
   Serial.begin(115200);
@@ -241,6 +301,5 @@ void os_getDevKey(uint8_t *buf)
 
 uint16_t os_getMeasurementInterval(uint8_t dr)
 {
-  return 20;
   return conf_getMeasurementInterval(dr);
 }
