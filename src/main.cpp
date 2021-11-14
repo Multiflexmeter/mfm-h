@@ -21,15 +21,15 @@ osjob_t job;
 
 // uint8_t addrBuffer[24] = {0};
 
-void printAddr(uint8_t *addr) {
-  for (uint8_t i = 0; i < 8; i++)
-  {
-    Serial.print("0x");
-    if (addr[i] < 0x10) Serial.print("0");
-    Serial.print(addr[i], HEX);
-    if (i < 7) Serial.print(", ");
-  }
-}
+// void printAddr(uint8_t *addr) {
+//   for (uint8_t i = 0; i < 8; i++)
+//   {
+//     Serial.print("0x");
+//     if (addr[i] < 0x10) Serial.print("0");
+//     Serial.print(addr[i], HEX);
+//     if (i < 7) Serial.print(", ");
+//   }
+// }
 
 // uint8_t findDevices()
 // {
@@ -79,7 +79,7 @@ void setup(void)
   //   }
   // }
 
-  // // TODO: Remove
+  // // // TODO: Remove
   // return;
 
 #if defined(DEBUG) || defined(PRINT_BUILD_DATE_TIME)
