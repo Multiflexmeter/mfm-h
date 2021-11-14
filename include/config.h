@@ -9,6 +9,12 @@
 #endif
 
 /*
+  Peilbuis pilot configuration
+*/
+#define SLAVE_ADDR 0x36
+#define SLAVE_MOD_TYP 0x11
+
+/*
   Generic configuration
 */
 // Whether to output debug information to the serial output

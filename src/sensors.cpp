@@ -70,15 +70,20 @@ void smbus_init(void)
 void smbus_doMeasurements(void)
 {
   // Generate start condition
-  if (!twi_start(0x36, TW_WRITE)) return twi_stop();
+  if (!twi_start(SLAVE_ADDR, TW_WRITE)) return twi_stop();
   if (!twi_tx(0x10)) return twi_stop();
   twi_stop();
 }
 
 uint8_t smbus_getMeasurement(uint8_t *buf)
 {
+  // Prepare buf with slave addr and typ
+  uint8_t *ptr = buf;
+  *(ptr++) = SLAVE_ADDR << 1;
+  *(ptr++) = SLAVE_MOD_TYP;
+
   uint8_t byte = 0;
-  if (!twi_start(0x36, TW_WRITE)) {
+  if (!twi_start(SLAVE_ADDR, TW_WRITE)) {
     twi_stop();
     return 0;
   }
@@ -86,7 +91,7 @@ uint8_t smbus_getMeasurement(uint8_t *buf)
     twi_stop();
     return 0;
   }
-  if (!twi_start(0x36, TW_READ)) {
+  if (!twi_start(SLAVE_ADDR, TW_READ)) {
     twi_stop();
     return 0;
   }
@@ -99,11 +104,11 @@ uint8_t smbus_getMeasurement(uint8_t *buf)
   uint8_t count = byte;
   for (uint8_t i = 0; i < count; i++)
   {
-    if (!twi_rx(&buf[i], (i < count - 1))) {
+    if (!twi_rx(ptr++, (i < count - 1))) {
       twi_stop();
       return 0;
     }
   }
   twi_stop();
-  return count;
+  return ptr - buf;
 }
