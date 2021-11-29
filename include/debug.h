@@ -15,7 +15,8 @@
 #define _debugf(...) Serial.printf(__VA_ARGS__);
 #else
 #define _debugTime()
-#define _debug(msg)
+#define _debug(...)
+#define _debugf(...)
 #endif
 
 #endif // _DEBUG_H_

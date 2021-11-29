@@ -82,7 +82,7 @@ uint8_t smbus_getMeasurement(uint8_t *buf)
   *(ptr++) = SLAVE_ADDR << 1;
   *(ptr++) = SLAVE_MOD_TYP;
 
-  uint8_t byte = 0;
+  uint8_t count = 0;
   if (!twi_start(SLAVE_ADDR, TW_WRITE)) {
     twi_stop();
     return 0;
@@ -96,12 +96,11 @@ uint8_t smbus_getMeasurement(uint8_t *buf)
     return 0;
   }
 
-  if (!twi_rx(&byte, 1)) {
+  if (!twi_rx(&count, 1)) {
     twi_stop();
     return 0;
   }
 
-  uint8_t count = byte;
   for (uint8_t i = 0; i < count; i++)
   {
     if (!twi_rx(ptr++, (i < count - 1))) {

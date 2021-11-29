@@ -26,13 +26,13 @@ void setup(void)
   Serial.begin(115200);
 #endif
 #ifdef PRINT_BUILD_DATE_TIME
-  Serial.print(F("Build at: "));
+  Serial.print(F("\n\n\nBuild at: "));
   Serial.print(F(__DATE__));
   Serial.print(" ");
   Serial.print(F(__TIME__));
   Serial.print("\n");
   Serial.flush();
-#ifndef DEBUG
+#if !defined(DEBUG) && LMIC_DEBUG_LEVEL == 0
   Serial.end();
 #endif
 #endif
@@ -109,22 +109,15 @@ void job_fetchAndSend(osjob_t *job)
 }
 
 void scheduleNextMeasurement(osjob_t *job) {
+  // TODO: reimplement duty cycle aware scheduling
   // Schedule our next measurement and send
   ostime_t now = os_getTime();
   ostime_t next_send = sec2osticks(os_getMeasurementInterval(LMIC.datarate));
-  ostime_t next_possible = LMIC.txend - now;
 
   _debugTime();
   _debug("Next: ");
-  _debug(LMIC.txend);
-  _debug(" : ");
   _debug(next_send);
   _debug("\n");
-
-  
-  if (next_send < next_possible) {
-    next_send = next_possible;
-  }
 
   os_setTimedCallback(job, now + next_send, &job_performMeasurements);
 }
