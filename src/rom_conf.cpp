@@ -53,8 +53,6 @@ uint16_t conf_getMeasurementInterval(uint8_t dr)
 
   uint16_t interval = config.MEASUREMENT_INTERVAL[dr];
 
-  Serial.printf("got interval: %u\n", interval);
-
   // In case anything goes wrong keep interval between defaults
   if (interval < MIN_INTERVAL)
     interval = MIN_INTERVAL;
