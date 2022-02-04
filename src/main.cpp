@@ -2,6 +2,7 @@
 
 #include <Arduino.h>
 #include <avr/power.h>
+#include <avr/wdt.h>
 #include "sensors.h"
 #include "rom_conf.h"
 #include "debug.h"
@@ -302,4 +303,9 @@ void os_getDevKey(uint8_t *buf)
 uint16_t os_getMeasurementInterval(uint8_t dr)
 {
   return conf_getMeasurementInterval(dr);
+}
+
+ISR(WDT_vect) {
+  wdt_reset();
+  wdt_disable();
 }
