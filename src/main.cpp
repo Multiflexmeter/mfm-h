@@ -219,5 +219,5 @@ void os_getDevKey(uint8_t *buf)
 
 uint16_t os_getMeasurementInterval(uint8_t dr)
 {
-  return 900;
+  return conf_getMeasurementInterval(dr);
 }
